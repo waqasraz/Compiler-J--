@@ -1,0 +1,729 @@
+Script started on Mon 15 Apr 2013 03:41:42 PM MDT
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m ls
+[0m[01;32ma.out[0m  [01;34mbin[0m  build.xml  file.s  Makefile  prog.o  README  rts.s  [01;34msrc[0m  [01;34mTEST[0m  tracker  typescript
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m make clean build
+rm -f *.o a.out
+make: *** No rule to make target `build'.  Stop.
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m ant cla[Kean build
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+clean:
+   [delete] Deleting directory /home/waqas/git/Project/jmm/bin
+
+build-subprojects:
+
+init:
+    [mkdir] Created dir: /home/waqas/git/Project/jmm/bin
+     [copy] Copying 4 files to /home/waqas/git/Project/jmm/bin
+
+build-project:
+     [echo] jmm: /home/waqas/git/Project/jmm/build.xml
+    [javac] Compiling 113 source files to /home/waqas/git/Project/jmm/bin
+
+build:
+
+BUILD SUCCESSFUL
+Total time: 3 seconds
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m ant clean build[1@make[C[C[C[C[C[C[C[C[C[C[C[Cls[Kexitcho < file.sant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t1 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] File succesfully parsed
+
+BUILD SUCCESSFUL
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m cat file.s
+.text
+.global _start
+_start:
+	mov	r0,#1
+	lsl	r0,#20			@ 2^20 bytes o' stack, no heap
+	add	sp,r0 
+	bl	rtsinit
+	bl	M
+	b	Lhalt
+M:
+	stmfd sp!,{r4-r11,lr} 
+	 sub sp,#28 
+	adr	 r0, msg0
+	bl	 Lprints
+	add sp,#28 
+	ldmfd sp!, {r4-r11,pc} 
+msg0:
+	.asciz	"Hello World\n"
+
+
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m make run
+/usr/bin/qemu-system-arm -nographic -monitor null -cpu any -serial null -semihosting -kernel a.out
+Hello World
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m make runcat file.sant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t1 jmm0 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] Error in line 20, column 9 : Syntax error
+     [java] Error in line 20, column 9 : Couldn't repair and continue parse
+
+BUILD FAILED
+/home/waqas/git/Project/jmm/build.xml:52: Java returned: 1
+
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m ant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t10 jmm[1P jmm1 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] File succesfully parsed
+
+BUILD SUCCESSFUL
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m cat file.s
+.text
+.global _start
+	add	 sp,#28 
+	ldmfd sp!,{r4-r11,pc} 
+foo:		@ Function
+	stmfd sp!, {r4-r11,lr} 
+	sub sp,#28 
+	adr	 r0, msg0
+	bl	 Lprints
+	adr	 r0, msg1
+	bl	 Lprints
+	mov	 r0, #0
+	bl	 Lprinti
+	adr	 r0, msg3
+	bl	 Lprints
+	adr	 r0, msg4
+	bl	 Lprints
+	mov	 r0, #0
+	bl	 Lprintb
+	adr	 r0, msg6
+	bl	 Lprints
+	ldr	r4, =123
+	str	r4, [sp,#0]		@:i2
+	ldr	r5, =1
+	str	r5, [sp,#4]		@:b2
+	add	 sp,#28 
+	ldmfd sp!,{r4-r11,pc} 
+_start:
+	mov	r0,#1
+	lsl	r0,#20			@ 2^20 bytes o' stack, no heap
+	add	sp,r0 
+	bl	rtsinit
+	bl	M
+	b	Lhalt
+M:
+	stmfd sp!,{r4-r11,lr} 
+	 sub sp,#28 
+	adr	 r0, msg7
+	bl	 Lprints
+	mov	 r0, #0
+	bl	 Lprinti
+	adr	 r0, msg9
+	bl	 Lprints
+	adr	 r0, msg10
+	bl	 Lprints
+	mov	 r0, #0
+	bl	 Lprintb
+	adr	 r0, msg12
+	bl	 Lprints
+	bl	 foo	 @Calling function
+	bl	 foo	 @Calling function
+	add sp,#28 
+	ldmfd sp!, {r4-r11,pc} 
+msg0:
+	.asciz	"\n(it's ok if the following aren't 0/false)\n"
+msg1:
+	.asciz	"\tlocal int default value: "
+msg3:
+	.asciz	"\n"
+msg4:
+	.asciz	"\tlocal boolean default value: "
+msg6:
+	.asciz	"\n"
+msg7:
+	.asciz	"global int default value: "
+msg9:
+	.asciz	"\n"
+msg10:
+	.asciz	"global boolean default value: "
+msg12:
+	.asciz	"\n"
+
+
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m make run
+/usr/bin/qemu-system-arm -nographic -monitor null -cpu any -serial null -semihosting -kernel a.out
+global int default value: 0
+global boolean default value: false
+
+(it's ok if the following aren't 0/false)
+	local int default value: 0
+	local boolean default value: false
+
+(it's ok if the following aren't 0/false)
+	local int default value: 0
+	local boolean default value: false
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m make runcat file.sant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t11 jmm[1P jmm2 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] File succesfully parsed
+
+BUILD SUCCESSFUL
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m cat file.s
+.text
+.global _start
+_start:
+	mov	r0,#1
+	lsl	r0,#20			@ 2^20 bytes o' stack, no heap
+	add	sp,r0 
+	bl	rtsinit
+	bl	M
+	b	Lhalt
+M:
+	stmfd sp!,{r4-r11,lr} 
+	 sub sp,#28 
+	ldr	r4, =2
+	str	r4, [sp,#0]		@:i
+	ldr	r5, =1
+	str	r5, [sp,#4]		@:n_1
+	ldr	r6, =0
+	str	r6, [sp,#8]		@:n_2
+	adr	 r0, msg0
+	bl	 Lprints
+	adr	 r0, msg1
+	bl	 Lprints
+LP0:
+	ldr	r4, [sp,#0]
+	ldr	 r5, =47
+	mov	 r6, #0
+	cmp	r4, r5
+	movlt	 r6, #1
+	cmp	 r6, #0
+	beq	 LPEND0
+	adr	 r0, msg2
+	bl	 Lprints
+	ldr	r4, [sp,#0]
+	mov	 r0, r4
+	bl	 Lprinti
+	adr	 r0, msg4
+	bl	 Lprints
+	ldr	r5, [sp,#4]
+	ldr	r6, [sp,#8]
+	add	r7, r5, r6
+	str	r7, [sp,#12]
+	ldr	r7, [sp,#12]
+	mov	 r0, r7
+	bl	 Lprinti
+	ldr	r0, [sp,#4]		@:n_1
+	str	r0, [sp,#8]			@:n_2
+	ldr	r0, [sp,#12]		@:n
+	str	r0, [sp,#4]			@:n_1
+	adr	 r0, msg6
+	bl	 Lprints
+	ldr	r4, [sp,#0]
+	add	r4, r4, #1
+	str	r4, [sp,#0]
+	b	LP0
+LPEND0:
+	add sp,#28 
+	ldmfd sp!, {r4-r11,pc} 
+msg0:
+	.asciz	"fib(0) = 0\n"
+msg1:
+	.asciz	"fib(1) = 1\n"
+msg2:
+	.asciz	"fib("
+msg4:
+	.asciz	") = "
+msg6:
+	.asciz	"\n"
+
+
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m make run
+/usr/bin/qemu-system-arm -nographic -monitor null -cpu any -serial null -semihosting -kernel a.out
+fib(0) = 0
+fib(1) = 1
+fib(2) = 1
+fib(3) = 2
+fib(4) = 3
+fib(5) = 5
+fib(6) = 8
+fib(7) = 13
+fib(8) = 21
+fib(9) = 34
+fib(10) = 55
+fib(11) = 89
+fib(12) = 144
+fib(13) = 233
+fib(14) = 377
+fib(15) = 610
+fib(16) = 987
+fib(17) = 1597
+fib(18) = 2584
+fib(19) = 4181
+fib(20) = 6765
+fib(21) = 10946
+fib(22) = 17711
+fib(23) = 28657
+fib(24) = 46368
+fib(25) = 75025
+fib(26) = 121393
+fib(27) = 196418
+fib(28) = 317811
+fib(29) = 514229
+fib(30) = 832040
+fib(31) = 1346269
+fib(32) = 2178309
+fib(33) = 3524578
+fib(34) = 5702887
+fib(35) = 9227465
+fib(36) = 14930352
+fib(37) = 24157817
+fib(38) = 39088169
+fib(39) = 63245986
+fib(40) = 102334155
+fib(41) = 165580141
+fib(42) = 267914296
+fib(43) = 433494437
+fib(44) = 701408733
+fib(45) = 1134903170
+fib(46) = 1836311903
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m make runcat file.sant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t12 jmm[1P jmm3 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] File succesfully parsed
+
+BUILD SUCCESSFUL
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m cat file.s
+.text
+.global _start
+reverse:		@ Function
+	stmfd sp!, {r4-r11,lr} 
+	sub sp,#28 
+	bl	Lgetchar
+	mov	r4, r0
+	str	r4, [sp,#0]		@:c
+	ldr	r4, [ip,#0]
+	ldr	r5, [sp,#0]
+	mov	 r6, #0
+	cmp	r4, r5
+	movlt	 r6, #1
+	cmp	 r6, #0
+	beq	 LPEND0
+	bl	 reverse	 @Calling function
+	ldr	r4, [sp,#0]
+	mov	 r0, r4
+	bl	 Lprintc
+LPEND0:
+	add	 sp,#28 
+	ldmfd sp!,{r4-r11,pc} 
+_start:
+	mov	r0,#1
+	lsl	r0,#20			@ 2^20 bytes o' stack, no heap
+	add	sp,r0 
+	bl	rtsinit
+	bl	M
+	b	Lhalt
+M:
+	stmfd sp!,{r4-r11,lr} 
+	 sub sp,#28 
+	ldr	r4, =10
+	str	r4, [ip,#0]		@:NL
+	bl	 reverse	 @Calling function
+	add sp,#28 
+	ldmfd sp!, {r4-r11,pc} 
+
+
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m make run
+/usr/bin/qemu-system-arm -nographic -monitor null -cpu any -serial null -semihosting -kernel a.out
+10
+01]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m make runcat file.sant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t13 jmm[1P jmm4 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] File succesfully parsed
+
+BUILD SUCCESSFUL
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m cat file.s
+.text
+.global _start
+_start:
+	mov	r0,#1
+	lsl	r0,#20			@ 2^20 bytes o' stack, no heap
+	add	sp,r0 
+	bl	rtsinit
+	bl	M
+	b	Lhalt
+M:
+	stmfd sp!,{r4-r11,lr} 
+	 sub sp,#28 
+	ldr	r4, =0
+	str	r4, [sp,#0]		@:i
+	ldr	r5, =1000000
+	str	r5, [sp,#4]		@:delta
+LP0:
+	ldr	r4, [sp,#0]
+	ldr	r5, [sp,#4]
+	sub	r0, r4, r5
+	mov	r5, r0
+	ldr	r4, [sp,#0]
+	mov	 r6, #0
+	cmp	r4, r5
+	movgt	 r6, #1
+	cmp	 r6, #0
+	beq	 LPEND0
+	ldr	r4, [sp,#0]
+	ldr	r5, [sp,#4]
+	add	r4, r4, r5
+	str	r4, [sp,#0]
+	b	LP0
+LPEND0:
+	ldr	r4, [sp,#0]
+	ldr	r5, [sp,#4]
+	sub	r4, r4, r5
+	str	r4, [sp,#0]
+LP1:
+	ldr	r4, [sp,#0]
+	ldr	 r5, =1
+	sub	r0, r4, r5
+	mov	r5, r0
+	ldr	r4, [sp,#0]
+	mov	 r6, #0
+	cmp	r4, r5
+	movgt	 r6, #1
+	cmp	 r6, #0
+	beq	 LPEND1
+	ldr	r4, [sp,#0]
+	add	r4, r4, #1
+	str	r4, [sp,#0]
+	b	LP1
+LPEND1:
+	adr	 r0, msg0
+	bl	 Lprints
+	ldr	r4, [sp,#0]
+	mov	 r0, r4
+	bl	 Lprinti
+	adr	 r0, msg2
+	bl	 Lprints
+	add sp,#28 
+	ldmfd sp!, {r4-r11,pc} 
+msg0:
+	.asciz	"minint is "
+msg2:
+	.asciz	"\n"
+
+
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m make run
+/usr/bin/qemu-system-arm -nographic -monitor null -cpu any -serial null -semihosting -kernel a.out
+minint is -2147483648
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m make runcat file.sant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t14 jmm[1P jmm5 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] File succesfully parsed
+
+BUILD SUCCESSFUL
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m cat file.s
+.text
+.global _start
+nl:		@ Function
+	stmfd sp!, {r4-r11,lr} 
+	sub sp,#28 
+	adr	 r0, msg0
+	bl	 Lprints
+	add	 sp,#28 
+	ldmfd sp!,{r4-r11,pc} 
+_start:
+	mov	r0,#1
+	lsl	r0,#20			@ 2^20 bytes o' stack, no heap
+	add	sp,r0 
+	bl	rtsinit
+	bl	M
+	b	Lhalt
+M:
+	stmfd sp!,{r4-r11,lr} 
+	 sub sp,#28 
+	mov	 r0, #123
+	bl	 Lprinti
+	bl	 nl	 @Calling function
+	mov	 r0, #-2147483648
+	bl	 Lprinti
+	bl	 nl	 @Calling function
+	mov	 r0, #-2147483648
+	bl	 Lprinti
+	bl	 nl	 @Calling function
+	mov	 r0, #-2147483648
+	bl	 Lprinti
+	bl	 nl	 @Calling function
+	add sp,#28 
+	ldmfd sp!, {r4-r11,pc} 
+msg0:
+	.asciz	"\n"
+
+
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m make run
+/usr/bin/qemu-system-arm -nographic -monitor null -cpu any -serial null -semihosting -kernel a.out
+123
+-2147483648
+-2147483648
+-2147483648
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m make runcat file.sant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t15 jmm[1P jmm8 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] Error in line 82, column 10 : Syntax error
+     [java] Error in line 82, column 10 : Couldn't repair and continue parse
+
+BUILD FAILED
+/home/waqas/git/Project/jmm/build.xml:52: Java returned: 1
+
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m ant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t18 jmm[1P jmm[1P jmm2 jmm2 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] Error: No main function!
+     [java] File succesfully parsed
+
+BUILD SUCCESSFUL
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m ant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t22 jmm[1P jmm[1P jmm2 jmm6 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] Error in line 3, column 9 : Syntax error
+     [java] Error in line 3, column 9 : Couldn't repair and continue parse
+
+BUILD FAILED
+/home/waqas/git/Project/jmm/build.xml:52: Java returned: 1
+
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m ant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t26 jmm[1P jmm[1P jmm2 jmm9 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] java.lang.ArrayIndexOutOfBoundsException: -1
+     [java] 	at java.util.ArrayList.elementData(ArrayList.java:371)
+     [java] 	at java.util.ArrayList.get(ArrayList.java:384)
+     [java] 	at JmmVisitor.visit(JmmVisitor.java:242)
+     [java] 	at AST.AssignmentDerived1.accept(AssignmentDerived1.java:35)
+     [java] 	at AST.AssignmentDerived1.traverseBottomUp(AssignmentDerived1.java:52)
+     [java] 	at AST.StatementexpressionDerived1.traverseBottomUp(StatementexpressionDerived1.java:37)
+     [java] 	at AST.StatementDerived3.traverseBottomUp(StatementDerived3.java:37)
+     [java] 	at AST.BlockstatementDerived2.traverseBottomUp(BlockstatementDerived2.java:37)
+     [java] 	at AST.BlockstatementsDerived2.traverseBottomUp(BlockstatementsDerived2.java:51)
+     [java] 	at AST.BlockstatementsDerived2.traverseBottomUp(BlockstatementsDerived2.java:50)
+     [java] 	at AST.BlockstatementsDerived2.traverseBottomUp(BlockstatementsDerived2.java:50)
+     [java] 	at AST.BlockstatementsDerived2.traverseBottomUp(BlockstatementsDerived2.java:50)
+     [java] 	atFile succesfully parsed
+     [java]  AST.BlockDerived1.traverseBottomUp(BlockDerived1.java:37)
+     [java] 	at AST.FunctionDecl.traverseBottomUp(FunctionDecl.java:51)
+     [java] 	at AST.GlobalFunctionDecl.traverseBottomUp(GlobalFunctionDecl.java:37)
+     [java] 	at AST.GlobaldeclarationsDerived1.traverseBottomUp(GlobaldeclarationsDerived1.java:51)
+     [java] 	at AST.GlobaldeclarationsDerived1.traverseBottomUp(GlobaldeclarationsDerived1.java:50)
+     [java] 	at AST.AllGlobals.traverseBottomUp(AllGlobals.java:37)
+     [java] 	at jmm.main(jmm.java:32)
+
+BUILD SUCCESSFUL
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m ant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t29 jmm[1P jmm[1P jmm3 jmm0 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] File succesfully parsed
+
+BUILD SUCCESSFUL
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m cat file.s
+.text
+.global _start
+	add	 sp,#28 
+	ldmfd sp!,{r4-r11,pc} 
+foo:		@ Function
+	stmfd sp!, {r4-r11,lr} 
+	sub sp,#28 
+	str	r0, [sp,#0]
+	ldr	r4, [sp,#0]		@:x
+LP0:
+	ldr	r4, [sp,#0]
+	ldr	r4, [sp,#0]
+	mul	r0, r4, r4
+	mov	r5, r0
+	ldr	 r5, =0
+	mov	 r6, #0
+	cmp	r4, r5
+	movlt	 r6, #1
+	cmp	 r6, #0
+	beq	 LPEND0
+	mov	 r0, #123
+LPEND0:
+	add	 sp,#28 
+	ldmfd sp!,{r4-r11,pc} 
+_start:
+	mov	r0,#1
+	lsl	r0,#20			@ 2^20 bytes o' stack, no heap
+	add	sp,r0 
+	bl	rtsinit
+	bl	M
+	b	Lhalt
+M:
+	stmfd sp!,{r4-r11,lr} 
+	 sub sp,#28 
+	ldr	 r4, =1
+	mov	 r0, r4
+	bl	foo
+	mov	 r5, r0
+	add sp,#28 
+	ldmfd sp!, {r4-r11,pc} 
+
+
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m make run
+/usr/bin/qemu-system-arm -nographic -monitor null -cpu any -serial null -semihosting -kernel a.out
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m make runcat file.sant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t30 jmm[1P jmm1 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] Error in line 8, column 1 : Syntax error
+     [java] Error in line 8, column 1 : Couldn't repair and continue parse
+
+BUILD FAILED
+/home/waqas/git/Project/jmm/build.xml:52: Java returned: 1
+
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m ant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t31 jmm[1P jmm2 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] Error in line 13, column 11 : Syntax error
+     [java] Error in line 13, column 11 : Couldn't repair and continue parse
+
+BUILD FAILED
+/home/waqas/git/Project/jmm/build.xml:52: Java returned: 1
+
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m ant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t32 jmm[1P jmm3 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] File succesfully parsed
+
+BUILD SUCCESSFUL
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m cat file.s
+.text
+.global _start
+_start:
+	mov	r0,#1
+	lsl	r0,#20			@ 2^20 bytes o' stack, no heap
+	add	sp,r0 
+	bl	rtsinit
+	bl	M
+	b	Lhalt
+M:
+	stmfd sp!,{r4-r11,lr} 
+	 sub sp,#28 
+	bl	Lgetchar
+	mov	r4, r0
+	str	r4, [sp,#0]		@:i
+LP0:
+	ldr	r4, [sp,#0]
+	ldr	 r5, =1
+	mov	 r6, #0
+	cmp	r4, r5
+	movne	 r6, #1
+	cmp	 r6, #0
+	beq	 LPEND0
+	ldr	r4, [sp,#0]
+	mov	 r0, r4
+	bl	 Lprintc
+	b	LP0
+LPEND0:
+	add sp,#28 
+	ldmfd sp!, {r4-r11,pc} 
+
+
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m cat file.sant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t33 jmm[1P jmm4 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] Error: No main function!
+     [java] File succesfully parsed
+
+BUILD SUCCESSFUL
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m ant -Darg0=/home/waqas/git/Project/jmm/TEST/final/gen.t34 jmm[1P jmm[1P jmm5 jmm
+Buildfile: /home/waqas/git/Project/jmm/build.xml
+
+jmm:
+     [java] File succesfully parsed
+
+BUILD SUCCESSFUL
+Total time: 1 second
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m file[K[K[K[Kcat file.s
+.text
+.global _start
+	add	 sp,#28 
+	ldmfd sp!,{r4-r11,pc} 
+_start:
+	mov	r0,#1
+	lsl	r0,#20			@ 2^20 bytes o' stack, no heap
+	add	sp,r0 
+	bl	rtsinit
+	bl	M
+	b	Lhalt
+M:
+	stmfd sp!,{r4-r11,lr} 
+	 sub sp,#28 
+	ldr	r4, =123
+	str	r4, [ip,#0]		@:i
+	ldr	r5, =456
+	str	r5, [sp,#0]		@:j
+	ldr	r4, [ip,#4]
+	ldr	r6, =789
+	str	r6, [ip,#4]		@:k
+	ldr	r6, =42
+	str	r6, [ip,#4]		@:k
+	ldr	r5, =42
+	str	r5, [sp,#0]			@:j
+	ldr	r4, [ip,#8]
+	ldr	r7, =42
+	str	r7, [ip,#8]		@:i
+	ldr	r8, =10
+	str	r8, [sp,#4]		@:NL
+	ldr	r7, [ip,#8]
+	mov	 r0, r7
+	bl	 Lprinti
+	ldr	r8, [sp,#4]
+	mov	 r0, r8
+	bl	 Lprintc
+	ldr	r5, [sp,#0]
+	mov	 r0, r5
+	bl	 Lprinti
+	ldr	r8, [sp,#4]
+	mov	 r0, r8
+	bl	 Lprintc
+	ldr	r6, [ip,#4]
+	mov	 r0, r6
+	bl	 Lprinti
+	ldr	r8, [sp,#4]
+	mov	 r0, r8
+	bl	 Lprintc
+	add sp,#28 
+	ldmfd sp!, {r4-r11,pc} 
+
+
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m make run
+/usr/bin/qemu-system-arm -nographic -monitor null -cpu any -serial null -semihosting -kernel a.out
+42
+42
+42
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m echo "Please be generous, i've spent alooot of time"
+Please be generous, i've spent alooot of time
+]0;root@linuxmint: /home/waqas/git/Project/jmm[01;31mlinuxmint[01;34m jmm #[00m exit
+exit
+
+Script done on Mon 15 Apr 2013 03:45:12 PM MDT

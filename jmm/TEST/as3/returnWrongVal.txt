@@ -1,0 +1,14 @@
+
+main() {
+	int x;
+}
+
+
+int First(int x) {
+
+	int t;
+	int g;
+	int z;
+	boolean a;
+	return a;
+}

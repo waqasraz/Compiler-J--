@@ -1,0 +1,8 @@
+
+main() {
+	prints("Hello World\n");
+	
+}
+
+
+

@@ -1,0 +1,237 @@
+package AST;
+
+import java_cup.runtime.*;
+
+
+ 
+parser code {:
+
+	public void report_error(String message, Object info) {
+		StringBuffer m = new StringBuffer("Error");
+		if (info instanceof java_cup.runtime.Symbol) {
+				java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+		if (s.left >= 0) {
+			m.append(" in line "+(s.left+1));
+				if (s.right >= 0)
+				m.append(", column "+(s.right+1));
+				}
+		}
+		m.append(" : "+message);
+		System.err.println(m);
+		}
+		
+	public void report_fatal_error(String message, Object info) {
+		report_error(message, info);
+		System.exit(1);
+	}
+	
+:};
+
+ terminal           PLUS, MINUS, MULT;
+ terminal	SLASH, PER, GT, LT, LE, GE, EQ, NE, NOT, AND, OR, BREAK, RETURN;
+ terminal 			IF, ELSE, WHILE;
+ terminal			BOOLEAN, INT;
+ terminal			OPENBRACE, CLOSEBRACE, LP, RP;
+ terminal			SEMI, COMMA ;
+ terminal String ID;
+ terminal String STRING;
+ terminal			TRUE, FALSE, VOID;
+ terminal String   NUMBER;
+ 
+ nonterminal     St st;
+nonterminal Literal1 literal1;
+nonterminal Globaldeclarations globaldeclarations;
+nonterminal Globaldeclaration globaldeclaration;
+nonterminal Variabledeclaration variabledeclaration;
+nonterminal Functiondeclaration functiondeclaration;
+nonterminal Identifier identifier;
+ nonterminal	String type, literal2, mulop, addop, relationalop, typevoid;
+ nonterminal    Functionheader functionheader;
+nonterminal Functiondeclarator functiondeclarator;
+nonterminal Formalparameterlist formalparameterlist;
+nonterminal Formalparameter formalparameter;
+nonterminal Mainfunctiondeclaration mainfunctiondeclaration;
+ nonterminal    Mainfunctiondeclarator mainfunctiondeclarator;
+nonterminal Block block;
+nonterminal Blockstatements blockstatements;
+nonterminal Blockstatement blockstatement;
+nonterminal Statement statement;
+nonterminal Statementexpression statementexpression;
+ nonterminal	 Primary primary;
+nonterminal  Argumentlist argumentlist;
+nonterminal Functioninvocation functioninvocation;
+nonterminal Postfixexpression postfixexpression;
+nonterminal Unaryexpression unaryexpression;
+nonterminal Multiplicativeexpression multiplicativeexpression;
+ nonterminal    Additiveexpression additiveexpression;
+nonterminal Relationalexpression relationalexpression;
+nonterminal Equalityexpression equalityexpression;
+nonterminal Conditionalandexpression conditionalandexpression;
+nonterminal Conditionalorexpression conditionalorexpression;
+ nonterminal    Assignmentexpression assignmentexpression;
+nonterminal Assignment assignment;
+nonterminal Expression expression;
+ 
+ precedence left  PLUS, MINUS;
+ precedence left  MULT, SLASH;
+ precedence left  ELSE;
+ precedence left  EQ;
+
+ st		::= {: RESULT=new StDerived1(); :} /* empty */
+		|(AllGlobals) globaldeclarations:g1 {: RESULT=new AllGlobals(g1); :}
+		;
+
+literal1		::= (Constant) NUMBER:val {: RESULT=new Constant(val); :}
+			    | (StringVal) STRING:val {: RESULT=new StringVal(val); :}
+			    ;
+
+literal2		::=  TRUE {: RESULT="true"; :}
+		| FALSE {: RESULT="false"; :}
+		;
+
+type		::= BOOLEAN {: RESULT="bool"; :}
+		| INT {: RESULT="int"; :}
+		;
+		
+typevoid	::= VOID {: RESULT="void"; :} ;
+
+mulop 		::= MULT {: RESULT="mul"; :} 
+		| SLASH {: RESULT="div"; :}
+		| PER {: RESULT="per"; :}
+		;
+		
+addop 		::= PLUS {: RESULT="add"; :} 
+		| MINUS {: RESULT="sub"; :}
+		;
+		
+relationalop 	::= LT {: RESULT="lt"; :} 
+		| GT {: RESULT="gt"; :}
+		| LE {: RESULT="le"; :} 
+		| GE {: RESULT="ge"; :}
+		;
+		
+globaldeclarations	::= (Global) globaldeclaration:g1 {: RESULT=new Global(g1); :}
+			| globaldeclarations:g1 globaldeclaration:g2 {: RESULT=new GlobaldeclarationsDerived1(g1, g2); :}
+			;
+
+globaldeclaration	::= (GlobalVariableDecl) variabledeclaration:v1 {: RESULT=new GlobalVariableDecl(v1); :}
+			| (GlobalFunctionDecl) functiondeclaration:f1 {: RESULT=new GlobalFunctionDecl(f1); :}
+			|(GlobalMainFunctionDecl) mainfunctiondeclaration:m1 {: RESULT=new GlobalMainFunctionDecl(m1); :}
+			;
+
+variabledeclaration	::= (VariableDecl) type:t1 identifier:i2 SEMI {: RESULT=new VariableDecl(t1, i2); :}
+			;
+
+identifier		::= (Identifier) ID:val {: RESULT=new Identifier(val); :} 
+			;
+
+functiondeclaration	::= (FunctionDecl) functionheader:f1 block:b2 {: RESULT=new FunctionDecl(f1, b2); :}
+			;
+
+functionheader		::= type:t1 functiondeclarator:f2 {: RESULT=new FunctionheaderDerived1(t1, f2); :}
+			| typevoid:t1 functiondeclarator:f2 {: RESULT=new FunctionheaderDerived2(t1, f2); :}
+			;
+
+functiondeclarator	::= (FunctionWithParm) identifier:i1 LP formalparameterlist:f2 RP {: RESULT=new FunctionWithParm(i1, f2); :}
+			| (FunctionWithNoParm) identifier:i1 LP RP {: RESULT=new FunctionWithNoParm(i1); :}
+			;
+
+formalparameterlist	::= formalparameter:f1 {: RESULT=new FormalparameterlistDerived1(f1); :}
+			| formalparameterlist:f1 COMMA formalparameter:f2 {: RESULT=new FormalparameterlistDerived2(f1, f2); :}
+			;
+
+formalparameter		::= type:t1 identifier:i2 {: RESULT=new FormalparameterDerived1(t1, i2); :}
+			;
+
+mainfunctiondeclaration	::=(MainFunction) mainfunctiondeclarator:m1 block:b2 {: RESULT=new MainFunction(m1, b2); :}
+			;
+
+mainfunctiondeclarator	::= identifier:i1 LP RP {: RESULT=new MainfunctiondeclaratorDerived1(i1); :}
+			  | identifier:i1 LP formalparameterlist:f2 RP {: RESULT=new MainfunctiondeclaratorDerived2(i1, f2); :}
+			;
+
+block			::= OPENBRACE blockstatements:b1 CLOSEBRACE {: RESULT=new BlockDerived1(b1); :}
+			| OPENBRACE CLOSEBRACE {: RESULT=new BlockDerived2(); :}
+			;
+
+blockstatements		::= blockstatement:b1 {: RESULT=new BlockstatementsDerived1(b1); :}
+			| blockstatements:b1 blockstatement:b2 {: RESULT=new BlockstatementsDerived2(b1, b2); :}
+			;
+
+blockstatement		::= variabledeclaration:v1 {: RESULT=new BlockstatementDerived1(v1); :}
+			| statement:s1 {: RESULT=new BlockstatementDerived2(s1); :}
+			;
+
+statement		::= block:b1 {: RESULT=new StatementDerived1(b1); :}
+			| SEMI {: RESULT=new StatementDerived2(); :}
+			| statementexpression:s1 SEMI {: RESULT=new StatementDerived3(s1); :}
+			| BREAK SEMI {: RESULT=new StatementDerived4(); :}
+			| RETURN expression:e1 SEMI {: RESULT=new StatementDerived5(e1); :}
+			| RETURN SEMI {: RESULT=new StatementDerived6(); :}
+			| IF LP expression:e1 RP statement:s2 {: RESULT=new StatementDerived7(e1, s2); :}
+			| IF LP expression:e1 RP statement:s2 ELSE statement:s3 {: RESULT=new StatementDerived8(e1, s2, s3); :}
+			| WHILE LP expression:e1 RP statement:s2 {: RESULT=new StatementDerived9(e1, s2); :}
+			;
+
+statementexpression	::= assignment:a1 {: RESULT=new StatementexpressionDerived1(a1); :}
+			| functioninvocation:f1 {: RESULT=new StatementexpressionDerived2(f1); :}
+			;
+
+primary			::= literal1:l1 {: RESULT=new PrimaryDerived1(l1); :} | literal2:l1 {: RESULT=new PrimaryDerived2(l1); :}
+			| LP expression:e1 RP {: RESULT=new PrimaryDerived3(e1); :}
+			| functioninvocation:f1 {: RESULT=new PrimaryDerived4(f1); :}
+			;
+
+argumentlist		::= expression:e1 {: RESULT=new ArgumentlistDerived1(e1); :}
+			| argumentlist:a1 COMMA expression:e2 {: RESULT=new ArgumentlistDerived2(a1, e2); :}
+			;
+
+functioninvocation	::= identifier:i1 LP argumentlist:a2 RP {: RESULT=new FunctioninvocationDerived1(i1, a2); :}
+			| identifier:i1 LP RP {: RESULT=new FunctioninvocationDerived2(i1); :}
+			;
+
+postfixexpression	::= primary:p1 {: RESULT=new PostfixexpressionDerived1(p1); :}
+			| identifier:i1 {: RESULT=new PostfixexpressionDerived2(i1); :}
+			;
+
+unaryexpression		::= MINUS unaryexpression:u1 {: RESULT=new UnaryexpressionDerived1(u1); :}
+			| NOT unaryexpression:u1 {: RESULT=new UnaryexpressionDerived2(u1); :}
+			| postfixexpression:p1 {: RESULT=new UnaryexpressionDerived3(p1); :}
+			;
+
+multiplicativeexpression::= unaryexpression:u1 {: RESULT=new MultiplicativeexpressionDerived1(u1); :}
+			| multiplicativeexpression:m1 mulop:m2 unaryexpression:u3 {: RESULT=new MultiplicativeexpressionDerived2(m1, m2, u3); :}
+			;
+
+additiveexpression	::= multiplicativeexpression:m1 {: RESULT=new AdditiveexpressionDerived1(m1); :}
+			| additiveexpression:a1 addop:a2 multiplicativeexpression:m3 {: RESULT=new AdditiveexpressionDerived2(a1, a2, m3); :}
+			;
+
+relationalexpression	::= additiveexpression:a1 {: RESULT=new RelationalexpressionDerived1(a1); :}
+			| relationalexpression:r1 relationalop:r2 additiveexpression:a3 {: RESULT=new RelationalexpressionDerived2(r1, r2, a3); :}
+			;
+
+equalityexpression	::= relationalexpression:r1 {: RESULT=new EqualityexpressionDerived1(r1); :}
+			| equalityexpression:e1 EQ relationalexpression:r2 {: RESULT=new EqualityexpressionDerived2(e1, r2); :}
+			| equalityexpression:e1 NE relationalexpression:r2 {: RESULT=new EqualityexpressionDerived3(e1, r2); :}
+			;
+
+conditionalandexpression::= equalityexpression:e1 {: RESULT=new ConditionalandexpressionDerived1(e1); :}
+			| conditionalandexpression:c1 AND equalityexpression:e2 {: RESULT=new ConditionalandexpressionDerived2(c1, e2); :}
+			;
+
+conditionalorexpression	::= conditionalandexpression:c1 {: RESULT=new ConditionalorexpressionDerived1(c1); :}
+			| conditionalorexpression:c1 OR conditionalandexpression:c2 {: RESULT=new ConditionalorexpressionDerived2(c1, c2); :}
+			;
+
+assignmentexpression	::= conditionalorexpression:c1 {: RESULT=new AssignmentexpressionDerived1(c1); :}
+			| assignment:a1 {: RESULT=new AssignmentexpressionDerived2(a1); :}
+			;
+
+assignment		::= identifier:i1 EQ assignmentexpression:a2 {: RESULT=new AssignmentDerived1(i1, a2); :}
+			;
+
+
+expression		::= assignmentexpression:a1 {: RESULT=new ExpressionDerived1(a1); :}
+			;
+

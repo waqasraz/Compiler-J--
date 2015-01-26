@@ -1,0 +1,26 @@
+
+int y;
+int x;
+
+main() {
+	int x;
+}
+
+int First()
+{
+	int x;
+	return x;
+}
+
+
+
+boolean Second()
+{
+	boolean z;
+	return z;
+}
+
+void third()
+{
+	boolean z;
+}

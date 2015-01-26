@@ -1,0 +1,211 @@
+package AST;
+
+import java_cup.runtime.*;
+
+
+ 
+parser code {:
+
+	public void report_error(String message, Object info) {
+		StringBuffer m = new StringBuffer("Error");
+		if (info instanceof java_cup.runtime.Symbol) {
+				java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+		if (s.left >= 0) {
+			m.append(" in line "+(s.left+1));
+				if (s.right >= 0)
+				m.append(", column "+(s.right+1));
+				}
+		}
+		m.append(" : "+message);
+		System.err.println(m);
+		}
+		
+	public void report_fatal_error(String message, Object info) {
+		report_error(message, info);
+		System.exit(1);
+	}
+	
+:};
+
+ terminal           PLUS, MINUS, MULT;
+ terminal	SLASH, PER, GT, LT, LE, GE, EQ, NE, NOT, AND, OR, BREAK, RETURN;
+ terminal 			IF, ELSE, WHILE;
+ terminal			BOOLEAN, INT;
+ terminal			OPENBRACE, CLOSEBRACE, LP, RP;
+ terminal			SEMI, COMMA ;
+ terminal String ID;
+ terminal String STRING;
+ terminal			TRUE, FALSE, VOID;
+ terminal String   NUMBER;
+ 
+ nonterminal     st, literal1, globaldeclarations, globaldeclaration, variabledeclaration, functiondeclaration, identifier;
+ nonterminal	String type, literal2, mulop, addop, relationalop, typevoid;
+ nonterminal    functionheader, functiondeclarator, formalparameterlist, formalparameter, mainfunctiondeclaration;
+ nonterminal    mainfunctiondeclarator, block, blockstatements, blockstatement, statement, statementexpression;
+ nonterminal	 primary,  argumentlist, functioninvocation, postfixexpression, unaryexpression, multiplicativeexpression;
+ nonterminal    additiveexpression, relationalexpression, equalityexpression, conditionalandexpression, conditionalorexpression;
+ nonterminal    assignmentexpression, assignment, expression;
+ 
+ precedence left  PLUS, MINUS;
+ precedence left  MULT, SLASH;
+ precedence left  ELSE;
+ precedence left  EQ;
+
+ st		::= /* empty */
+		|(AllGlobals) globaldeclarations
+		;
+
+literal1		::= (Constant) NUMBER:val
+			    | (StringVal) STRING:val
+			    ;
+
+literal2		::=  TRUE {: RESULT="true"; :}
+		| FALSE {: RESULT="false"; :}
+		;
+
+type		::= BOOLEAN {: RESULT="bool"; :}
+		| INT {: RESULT="int"; :}
+		;
+		
+typevoid	::= VOID {: RESULT="void"; :} ;
+
+mulop 		::= MULT {: RESULT="mul"; :} 
+		| SLASH {: RESULT="div"; :}
+		| PER {: RESULT="per"; :}
+		;
+		
+addop 		::= PLUS {: RESULT="add"; :} 
+		| MINUS {: RESULT="sub"; :}
+		;
+		
+relationalop 	::= LT {: RESULT="lt"; :} 
+		| GT {: RESULT="gt"; :}
+		| LE {: RESULT="le"; :} 
+		| GE {: RESULT="ge"; :}
+		;
+		
+globaldeclarations	::= (Global) globaldeclaration
+			| globaldeclarations globaldeclaration
+			;
+
+globaldeclaration	::= (GlobalVariableDecl) variabledeclaration
+			| (GlobalFunctionDecl) functiondeclaration
+			|(GlobalMainFunctionDecl) mainfunctiondeclaration
+			;
+
+variabledeclaration	::= (VariableDecl) type identifier SEMI
+			;
+
+identifier		::= (Identifier) ID:val 
+			;
+
+functiondeclaration	::= (FunctionDecl) functionheader block
+			;
+
+functionheader		::= type functiondeclarator
+			| typevoid functiondeclarator
+			;
+
+functiondeclarator	::= (FunctionWithParm) identifier LP formalparameterlist RP
+			| (FunctionWithNoParm) identifier LP RP
+			;
+
+formalparameterlist	::= formalparameter
+			| formalparameterlist COMMA formalparameter
+			;
+
+formalparameter		::= type identifier
+			;
+
+mainfunctiondeclaration	::=(MainFunction) mainfunctiondeclarator block
+			;
+
+mainfunctiondeclarator	::= identifier LP RP
+			  | identifier LP formalparameterlist RP
+			;
+
+block			::= OPENBRACE blockstatements CLOSEBRACE
+			| OPENBRACE CLOSEBRACE
+			;
+
+blockstatements		::= blockstatement
+			| blockstatements blockstatement
+			;
+
+blockstatement		::= variabledeclaration
+			| statement
+			;
+
+statement		::= block
+			| SEMI
+			| statementexpression SEMI
+			| BREAK SEMI
+			| RETURN expression SEMI
+			| RETURN SEMI
+			| IF LP expression RP statement
+			| IF LP expression RP statement ELSE statement
+			| WHILE LP expression RP statement
+			;
+
+statementexpression	::= assignment
+			| functioninvocation
+			;
+
+primary			::= literal1 | literal2
+			| LP expression RP
+			| functioninvocation
+			;
+
+argumentlist		::= expression
+			| argumentlist COMMA expression
+			;
+
+functioninvocation	::= identifier LP argumentlist RP
+			| identifier LP RP
+			;
+
+postfixexpression	::= primary
+			| identifier
+			;
+
+unaryexpression		::= MINUS unaryexpression
+			| NOT unaryexpression
+			| postfixexpression
+			;
+
+multiplicativeexpression::= unaryexpression
+			| multiplicativeexpression mulop unaryexpression
+			;
+
+additiveexpression	::= multiplicativeexpression
+			| additiveexpression addop multiplicativeexpression
+			;
+
+relationalexpression	::= additiveexpression
+			| relationalexpression relationalop additiveexpression
+			;
+
+equalityexpression	::= relationalexpression
+			| equalityexpression EQ relationalexpression
+			| equalityexpression NE relationalexpression
+			;
+
+conditionalandexpression::= equalityexpression
+			| conditionalandexpression AND equalityexpression
+			;
+
+conditionalorexpression	::= conditionalandexpression
+			| conditionalorexpression OR conditionalandexpression
+			;
+
+assignmentexpression	::= conditionalorexpression
+			| assignment
+			;
+
+assignment		::= identifier EQ assignmentexpression
+			;
+
+
+expression		::= assignmentexpression
+			;
+
