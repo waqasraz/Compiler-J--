@@ -12,7 +12,11 @@ To run, Navigate to Jmm
     > ant  -Darg0=[argument - filename] jmm
 
 The above command will create a.out file 
-You can run the file by typing **make run**
+You can run the file by typing 
+
+    > make run
+
+Files:
 
     jmm/TEST/final 	"All test Files"
     jmm/src 	        "All source Files"
