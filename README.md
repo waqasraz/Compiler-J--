@@ -14,8 +14,8 @@ To run, Navigate to Jmm
 The above command will create a.out file 
 You can run the file by typing make run
 
-Project/jmm/TEST/final 	"All test Files"
-Project/jmm/src 	"All source Files"
+    jmm/TEST/final 	"All test Files"
+    jmm/src 	        "All source Files"
 
 
 
